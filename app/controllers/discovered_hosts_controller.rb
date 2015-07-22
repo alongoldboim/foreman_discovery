@@ -2,6 +2,7 @@ class DiscoveredHostsController < ::ApplicationController
   include Foreman::Controller::AutoCompleteSearch
   include Foreman::Controller::TaxonomyMultiple
   include Foreman::Controller::DiscoveredExtensions
+  include ActionView::Helpers::NumberHelper
   unloadable
 
   before_filter :find_by_name, :only => %w[show edit update destroy refresh_facts convert reboot auto_provision]
@@ -25,8 +26,19 @@ class DiscoveredHostsController < ::ApplicationController
 
   def show
     # filter graph time range
+    @general =    {:Highlights => ["size", "productname", "memorysize", "interface", "manufacturer", "architecture", "macaddress", "processorcount", "physicalprocessorcount", "discovery_boot"]}
+    @highlights = {:Storage => ["blockdevice"],
+                   :Hardware => ["hardw", "manufacturer", "memo", "process"],
+                   :Network => ["ipaddress", "interfaces", "dhcp", "fqdn", "hostname", "link", "mtu", "net"] + @host.facts_hash["interfaces"].split(","),
+                   :Software => ["bios", "os", "discovery"]}
+    @facts = @host.facts_hash
+    @facts.delete("memorysize_mb")
+    @facts.each do |key, val|
+       @highlights.merge!({:IPMI => ["ipmi"]}) if key.to_s.downcase.include?("ipmi")
+       @facts[key] = number_to_human_size(val)  if key.to_s.downcase.include?("blockdevice") && key.to_s.downcase.include?("_size")
+    end
+    @highlights.merge!(:Miscellaneous => [])
     @range = nil
-
     # summary report text
     @report_summary = nil
   end
