@@ -2,15 +2,45 @@
 
 <%= discovered_hosts_title_actions(@host) %>
 
-<h3><%= _('Facts discovered on this host') -%></h3>
-<table class="table table-bordered table-striped table-condensed">
-  <tr>
-    <th><%= _('Fact') -%></th>
-    <th><%= _('Value') -%></th>
-  <% @host.facts_hash.sort.each do |fact| -%>
-    <tr>
-      <td><%= fact[0] %></td>
-      <td><%= truncate(fact[1], :length => 100) %></td>
-    </tr>
+<div class="row">
+  <% @general.each do |keys, val| %>
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading" ><%= keys %></div>
+          <div class="panel-body">
+            <ul class="list-group">
+              <% @host.facts_hash.select{ |key, value|  val.any?{|v| key.include? v }}.each do |fact| %>
+                <li class="list-group-item"> <strong> <%=fact[0] %>: </strong>  <%= breaking_wrap_wrap(fact[1],  50)%></li>
+                <% @facts.delete(fact[0]) %>
+              <% end %>
+            </ul>
+          </div>
+         </div>
+     </div>
   <% end -%>
-</table>
+
+  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <div class="col-md-6">
+      <% @highlights.each do |keys, val| %>
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab">
+            <h4 class="panel-title">
+              <a role="button" data-toggle="collapse" data-parent="#accordion" href="#<%=keys.to_s+"panel"%>" aria-expanded="true">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                <%=keys%>
+              </a>
+            </h4>
+          </div>
+          <div id="<%=keys.to_s+"panel"%>" class="panel-collapse collapse " role="tabpanel">
+            <div class="panel-body">
+              <% @facts.select{ |key, value|  keys.to_s.include?("Misc") || val.any?{|v| key.include? v  }}.each do |fact| %>
+                <li class="list-group-item"> <strong> <%=fact[0] %>: </strong>  <%= breaking_wrap_wrap(fact[1],  50)%></li>
+                <% @facts.delete(fact[0]) %>
+              <% end %>
+            </div>
+         </div>
+        </div>
+      <% end -%>
+    </div>
+  </div>
+</div>

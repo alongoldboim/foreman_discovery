@@ -25,6 +25,9 @@ class DiscoveredHostsController < ::ApplicationController
 
   def show
     # filter graph time range
+    @general= { :Genral_info => ["virtual", "gid", "lib", "selinux", "serialnumber", "virtual", "mac"]}
+    @highlights ={:Network=>["discovery", "dhcp", "fqdn", "hostname", "ip", "link", "mtu", "net", "interface"], :Storage => ["blockdevice"], :Hardware => ["architecture", "hardw", "manufacturer", "memo", "process"], :Software => ["bios", "os" ], :Misc => [] }
+    @facts = @host.facts_hash
     @range = nil
 
     # summary report text
