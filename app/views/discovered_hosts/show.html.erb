@@ -21,11 +21,11 @@
 
   <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
     <div class="col-md-6">
-      <% @highlights.each do |keys, val| %>
+      <% @categories.each do |keys, val| %>
         <div class="panel panel-default">
           <div class="panel-heading" role="tab">
             <h4 class="panel-title">
-              <a role="button" data-toggle="collapse" data-parent="#accordion" href="#<%= keys.to_s + "panel" %>" aria-expanded="true" onclick="$(this).find(':first-child').toggleClass('glyphicon glyphicon-minus-sign glyphicon glyphicon-plus-sign')">
+              <a role="button" class="expendable-link" data-toggle="collapse" data-parent="#accordion" href="#<%= keys.to_s + "panel" %>" aria-expanded="true" onclick="$(this).find(':first-child').toggleClass('glyphicon glyphicon-minus-sign glyphicon glyphicon-plus-sign')">
                 <span class="glyphicon glyphicon<%= (keys.to_s.include?("Storage")? "-minus-sign":"-plus-sign")%>" aria-hidden="true"></span>
                 <%= keys %>
               </a>
@@ -37,7 +37,7 @@
               <% @facts.sort.select{|key, value| keys.to_s.include?("Miscellaneous") || val.any?{|v| key.include? v}}.each do |fact| %>
                 <li class="list-group-item" >
                   <p data-toggle="tooltip" data-placement="top" title="<%= fact[1].length > 80 ? fact[1] : '' %>">
-                    <strong> <%= fact[0] %> : </strong>  <%= truncate(breaking_wrap_wrap(fact[1], 50), :length => 80)%>
+                    <strong> <%= fact[0] %> : </strong>  <%= truncate(fact[1], :length => 40)%>
                   </p>
                 </li>
                 <% @facts.delete(fact[0]) %>

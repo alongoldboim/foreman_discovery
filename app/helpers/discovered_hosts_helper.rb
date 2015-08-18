@@ -16,10 +16,14 @@ module DiscoveredHostsHelper
                                 link_to(action[0] , action[1], method)
                               end.flatten
         ),
-      button_group(
+        button_group(
+            link_to(_("Expend-all"),"#",:class => "btn ",:onclick => "$('.glyphicon-plus-sign').toggleClass('glyphicon glyphicon-minus-sign glyphicon glyphicon-plus-sign'); $('.collapse').toggleClass('collapse in').height('auto'); ")
+        ),
+        button_group(
         link_to(_("Delete"), hash_for_discovered_host_path(:id => host),
                 :class => "btn btn-danger", :confirm => _('Are you sure?'), :method => :delete)
-      )
+        )
+
     )
   end
 
@@ -68,8 +72,4 @@ module DiscoveredHostsHelper
 
   end
 
-  def breaking_wrap_wrap(txt, col = 80)
-    txt.gsub(/(.{1,#{col}})( +|$\n?)|(.{1,#{col}})/,
-             "\\1\\3\n")
-  end
 end

@@ -27,17 +27,17 @@ class DiscoveredHostsController < ::ApplicationController
   def show
     # filter graph time range
     @general =    {:Highlights => ["size", "productname", "memorysize", "interface", "manufacturer", "architecture", "macaddress", "processorcount", "physicalprocessorcount", "discovery_boot"]}
-    @highlights = {:Storage => ["blockdevice"],
+    @categories = {:Storage => ["blockdevice"],
                    :Hardware => ["hardw", "manufacturer", "memo", "process"],
                    :Network => ["ipaddress", "interfaces", "dhcp", "fqdn", "hostname", "link", "mtu", "net"] + @host.facts_hash["interfaces"].split(","),
                    :Software => ["bios", "os", "discovery"]}
-    @facts = @host.facts_hash
+    @facts = @host.facts_hash.clone
     @facts.delete("memorysize_mb")
     @facts.each do |key, val|
-       @highlights.merge!({:IPMI => ["ipmi"]}) if key.to_s.downcase.include?("ipmi")
-       @facts[key] = number_to_human_size(val)  if key.to_s.downcase.include?("blockdevice") && key.to_s.downcase.include?("_size")
+      @categories.merge!({:IPMI => ["ipmi"]}) if key.to_s.downcase.include?("ipmi") && !@categories[:IPMI]
+      @facts[key] = number_to_human_size(val)  if /^blockdevice_\w+_size/.match(key)
     end
-    @highlights.merge!(:Miscellaneous => [])
+    @categories.merge!(:Miscellaneous => [])
     @range = nil
     # summary report text
     @report_summary = nil
